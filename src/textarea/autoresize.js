@@ -1,6 +1,5 @@
-import throttle from 'lodash.throttle';
-import { defaultOptions, isDynamic, throttleOptions } from './options';
-import { getStyles, getPropertyValue } from '../utils';
+import { defaultOptions, isDynamic } from './options';
+import { getStyles, getPropertyValue, throttle, middleValue } from '../utils';
 
 function getBaseScrollHeight(textarea, rows) {
   const { value } = textarea;
@@ -23,7 +22,7 @@ function createScrollListener(maximumRows) {
 }
 
 function dynamicAutoResize(textarea, options) {
-  const { updateDelay, minimumRows, maximumRows } = options;
+  const { minimumRows, maximumRows } = options;
   const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
 
   let styles = getStyles(textarea);
@@ -33,7 +32,7 @@ function dynamicAutoResize(textarea, options) {
     textarea.rows = 1;
     const rowsHeight = textarea.scrollHeight - baseScrollHeight + rowHeight;
     const rows = Math.ceil(rowsHeight / rowHeight);
-    textarea.rows = Math.min(Math.max(rows, minimumRows), maximumRows);
+    textarea.rows = middleValue(minimumRows, rows, maximumRows);
   };
 
   const updateStyles = () => {
@@ -42,9 +41,9 @@ function dynamicAutoResize(textarea, options) {
   };
 
   // eslint-disable-next-line prettier/prettier
-  const keydownListener = throttle(updateRowCount, updateDelay, throttleOptions);
+  const keydownListener = throttle(updateRowCount);
   const scrollListener = createScrollListener(maximumRows);
-  const resizeListener = throttle(updateStyles, updateDelay, throttleOptions);
+  const resizeListener = throttle(updateStyles);
 
   textarea.addEventListener('keydown', keydownListener);
   textarea.addEventListener('scroll', scrollListener);
@@ -58,18 +57,18 @@ function dynamicAutoResize(textarea, options) {
 }
 
 function staticAutoResize(textarea, options) {
-  const { updateDelay, minimumRows, maximumRows, rowHeight } = options;
+  const { minimumRows, maximumRows, rowHeight } = options;
   const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
 
   const updateRowCount = () => {
     textarea.rows = 1;
     const rowsHeight = textarea.scrollHeight - baseScrollHeight + rowHeight;
     const rows = Math.ceil(rowsHeight / rowHeight);
-    textarea.rows = Math.min(Math.max(rows, minimumRows), maximumRows);
+    textarea.rows = middleValue(minimumRows, rows, maximumRows);
   };
 
   // eslint-disable-next-line prettier/prettier
-  const keydownListener = throttle(updateRowCount, updateDelay, throttleOptions);
+  const keydownListener = throttle(updateRowCount);
   const scrollListener = createScrollListener(maximumRows);
 
   textarea.addEventListener('keydown', keydownListener);
