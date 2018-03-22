@@ -1,3 +1,3 @@
 export default Object.freeze({
-  rowWidth: null
+  maxWidth: null
 });

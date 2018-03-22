@@ -1,4 +1,4 @@
-import { defaultOptions, isDynamic } from './options';
+import defaultOptions from './options';
 import { getStyles, getPropertyValue, throttle, middleValue } from '../utils';
 
 function getBaseScrollHeight(textarea, rows) {
@@ -21,69 +21,51 @@ function createScrollListener(maximumRows) {
   };
 }
 
-function dynamicAutoResize(textarea, options) {
+function createRowCountUpdater(textarea, options) {
+  const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
   const { minimumRows, maximumRows } = options;
-  const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
 
-  let rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
-
-  const updateRowCount = () => {
+  return rowHeight => {
     textarea.rows = 1;
     const rowsHeight = textarea.scrollHeight - baseScrollHeight + rowHeight;
     const rows = Math.ceil(rowsHeight / rowHeight);
     textarea.rows = middleValue(minimumRows, rows, maximumRows);
-  };
-
-  const updateStyles = () => {
-    rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
-    updateRowCount();
-  };
-
-  // eslint-disable-next-line prettier/prettier
-  const keydownListener = throttle(updateRowCount);
-  const scrollListener = createScrollListener(maximumRows);
-  const resizeListener = throttle(updateStyles);
-
-  textarea.addEventListener('keydown', keydownListener);
-  textarea.addEventListener('scroll', scrollListener);
-  window.addEventListener('resize', resizeListener);
-
-  return () => {
-    textarea.removeEventListener(keydownListener);
-    textarea.removeEventListener(scrollListener);
-    window.removeEventListener(resizeListener);
-  };
-}
-
-function staticAutoResize(textarea, options) {
-  const { minimumRows, maximumRows, rowHeight } = options;
-  const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
-
-  const updateRowCount = () => {
-    textarea.rows = 1;
-    const rowsHeight = textarea.scrollHeight - baseScrollHeight + rowHeight;
-    const rows = Math.ceil(rowsHeight / rowHeight);
-    textarea.rows = middleValue(minimumRows, rows, maximumRows);
-  };
-
-  // eslint-disable-next-line prettier/prettier
-  const keydownListener = throttle(updateRowCount);
-  const scrollListener = createScrollListener(maximumRows);
-
-  textarea.addEventListener('keydown', keydownListener);
-  textarea.addEventListener('scroll', scrollListener);
-
-  return () => {
-    textarea.removeEventListener(keydownListener);
-    textarea.removeEventListener(scrollListener);
   };
 }
 
 export default function autoresize(textarea, options) {
   const fullOptions = Object.assign({}, defaultOptions, options);
-  const dynamic = isDynamic(fullOptions);
+  const { maximumRows } = fullOptions;
+  let { rowHeight } = fullOptions;
+  let resizeListener;
 
-  return dynamic
-    ? dynamicAutoResize(textarea, fullOptions)
-    : staticAutoResize(textarea, fullOptions);
+  const dynamic = rowHeight == null;
+
+  const rowCountUpdater = createRowCountUpdater(textarea, fullOptions);
+  const updateRowCount = () => rowCountUpdater(rowHeight);
+
+  if (dynamic) {
+    rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
+    const updateStyles = () => {
+      rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
+      updateRowCount();
+    };
+
+    resizeListener = throttle(updateStyles);
+    window.addEventListener('resize', resizeListener);
+  }
+
+  const keydownListener = throttle(updateRowCount);
+  textarea.addEventListener('keydown', keydownListener);
+
+  const scrollListener = createScrollListener(maximumRows);
+  textarea.addEventListener('scroll', scrollListener);
+
+  return () => {
+    textarea.removeEventListener(keydownListener);
+    textarea.removeEventListener(scrollListener);
+    if (dynamic) {
+      window.removeEventListener(resizeListener);
+    }
+  };
 }

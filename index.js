@@ -7,10 +7,8 @@ export default function autoresize(element, options = {}) {
   } else if (element instanceof HTMLInputElement) {
     return autoresizeInput(element, options);
   }
-
-  console.error(
-    'Element type is not supported. Supported item types are: HTMLTextAreaElement, HTMLInputElement.'
-  );
+  // eslint-disable-next-line
+  console.error('Element type is not supported. Supported item types are: HTMLTextAreaElement, HTMLInputElement.');
 
   return null;
 }
