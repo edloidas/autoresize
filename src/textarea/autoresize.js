@@ -25,10 +25,9 @@ function dynamicAutoResize(textarea, options) {
   const { minimumRows, maximumRows } = options;
   const baseScrollHeight = getBaseScrollHeight(textarea, options.minimumRows);
 
-  let styles = getStyles(textarea);
+  let rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
 
   const updateRowCount = () => {
-    const rowHeight = getPropertyValue('lineHeight', styles);
     textarea.rows = 1;
     const rowsHeight = textarea.scrollHeight - baseScrollHeight + rowHeight;
     const rows = Math.ceil(rowsHeight / rowHeight);
@@ -36,7 +35,7 @@ function dynamicAutoResize(textarea, options) {
   };
 
   const updateStyles = () => {
-    styles = getStyles(textarea);
+    rowHeight = getPropertyValue('lineHeight', getStyles(textarea));
     updateRowCount();
   };
 
