@@ -23,15 +23,19 @@
   "homepage": "https://github.com/edloidas/autoresize#readme",
   "dependencies": {},
   "scripts": {
-    "build": "npm run compile && npm run minify",
+    "build": "npm-run-all compile transpile -p minify:**",
     "compile": "rollup src/browser.js --o dist/autoresize.js --f iife",
-    "minify": "uglifyjs -o dist/autoresize.min.js --compress --mangle -- dist/autoresize.js",
+    "transpile": "babel dist/autoresize.js --out-file dist/autoresize.es5.js",
+    "minify:es": "uglifyjs -o dist/autoresize.min.js --compress --mangle -- dist/autoresize.js",
+    "minify:es5": "uglifyjs -o dist/autoresize.es5.min.js --compress --mangle -- dist/autoresize.es5.js",
     "lint": "eslint . --fix",
     "precommit": "lint-staged",
     "prepublish": "npm run build",
     "postpublish": "git push --follow-tags"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "eslint": "4.19.0",
     "eslint-config-airbnb-base": "12.1.0",
     "eslint-config-prettier": "2.9.0",
@@ -39,6 +43,7 @@
     "eslint-plugin-prettier": "2.6.0",
     "husky": "0.14.3",
     "lint-staged": "7.0.0",
+    "npm-run-all": "^4.1.2",
     "prettier": "1.11.1",
     "rollup": "^0.57.1",
     "uglify-es": "^3.3.9"
