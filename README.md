@@ -57,7 +57,12 @@ Minified ES5 version:
 ```js
 const element = document.querySelector('#textarea');
 const options = { maximumRows: 5 };
-autoresize(element, options);
+
+// Enable autoresize by adding specific listeners
+const disable = autoresize(element, options);
+
+// Remove all listeners and disable autoresize
+disable();
 ```
 
 #### Paramenters
