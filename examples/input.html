@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>autoresize - &lt;input&gt;</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="text/javascript" src="../dist/autoresize.js"></script>
+</head>
+<body>
+  <header class="head">
+    <h1 class="head__title">autoresize</h1>
+    <p class="head__description">&lt;input&gt;</p>
+  </header>
+  <div class="content">
+    <input class="content__test-element input" type="text" name="autoresize" autofocus placeholder='Write a message…' />
+  </div>
+
+  <script type="text/javascript">
+    var input = document.querySelector('.input');
+    autoresize(input, { rowWidth: 100 });
+  </script>
+</body>
+</html>

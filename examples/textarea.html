@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>autoresize - &lt;textarea&gt;</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="text/javascript" src="../dist/autoresize.js"></script>
+</head>
+<body>
+  <header class="head">
+    <h1 class="head__title">autoresize</h1>
+    <p class="head__description">&lt;textarea&gt;</p>
+  </header>
+  <div class="content">
+    <textarea class="content__test-element textarea" name="autoresize" autofocus rows="1" placeholder='Write a message…'></textarea>
+  </div>
+
+  <script type="text/javascript">
+    var textarea = document.querySelector('.textarea');
+    autoresize(textarea, { rowHeight: 30, maximumRows: 5 });
+  </script>
+</body>
+</html>

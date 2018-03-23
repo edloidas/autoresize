@@ -1,0 +1,5 @@
+node_modules/
+dist/autoresize.*.js
+.cache/
+src/
+yarn-error.log
