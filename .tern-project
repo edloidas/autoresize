@@ -1,0 +1,25 @@
+{
+  "ecmaVersion": 7,
+  "libs": [
+    "browser"
+  ],
+  "loadEagerly": [
+    "src/main/resources/assets/js/**/*.js",
+    "node_modules/**"
+  ],
+  "plugins": {
+    "complete_strings": {
+      "maxLength": 15
+    },
+    "node": {},
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    },
+    "es_modules": {},
+    "doc_comment": {
+      "fullDocs": true,
+      "strong": true
+    }
+  }
+}

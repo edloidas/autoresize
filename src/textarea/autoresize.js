@@ -1,5 +1,11 @@
 import defaultOptions from './options';
-import { getStyles, getPropertyValue, throttle, middleValue } from '../utils';
+import {
+  getStyles,
+  getPropertyValue,
+  throttle,
+  middleValue,
+  isPresent
+} from '../utils';
 
 function getBaseScrollHeight(textarea, rows) {
   const { value } = textarea;
@@ -33,15 +39,14 @@ function createRowCountUpdater(textarea, options) {
   };
 }
 
-export default function autoresize(textarea, options) {
-  const fullOptions = Object.assign({}, defaultOptions, options);
-  const { maximumRows } = fullOptions;
-  let { rowHeight } = fullOptions;
+function autoresize(textarea, options) {
+  const { maximumRows } = options;
+  let { rowHeight } = options;
   let resizeListener;
 
   const dynamic = rowHeight == null;
 
-  const rowCountUpdater = createRowCountUpdater(textarea, fullOptions);
+  const rowCountUpdater = createRowCountUpdater(textarea, options);
   const updateRowCount = () => rowCountUpdater(rowHeight);
 
   if (dynamic) {
@@ -62,10 +67,32 @@ export default function autoresize(textarea, options) {
   textarea.addEventListener('scroll', scrollListener);
 
   return () => {
-    textarea.removeEventListener(keydownListener);
-    textarea.removeEventListener(scrollListener);
+    textarea.removeEventListener('keydown', keydownListener);
+    textarea.removeEventListener('scroll', scrollListener);
     if (dynamic) {
-      window.removeEventListener(resizeListener);
+      window.removeEventListener('resize', resizeListener);
     }
+  };
+}
+
+export default function waitForRendered(textarea, options) {
+  const fullOptions = Object.assign({}, defaultOptions, options);
+  let intervalID;
+  let remove = () => {};
+
+  if (fullOptions.assumeRendered || isPresent(textarea)) {
+    remove = autoresize(textarea, fullOptions);
+  } else {
+    intervalID = setInterval(() => {
+      if (isPresent(textarea)) {
+        clearInterval(intervalID);
+        remove = autoresize(textarea, fullOptions);
+      }
+    }, 1000);
+  }
+
+  return () => {
+    clearInterval(intervalID);
+    remove();
   };
 }

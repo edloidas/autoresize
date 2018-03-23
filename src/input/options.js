@@ -1,3 +1,4 @@
 export default Object.freeze({
-  maxWidth: null
+  maxWidth: null,
+  assumeRendered: false
 });

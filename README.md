@@ -56,7 +56,7 @@ Minified ES5 version:
 
 ```js
 const element = document.querySelector('#textarea');
-const options = { maximumRows: 5 };
+const options = { maximumRows: 5, assumeRendered: true };
 
 // Enable autoresize by adding specific listeners
 const disable = autoresize(element, options);
@@ -81,15 +81,19 @@ __TextArea__
 {
   minimumRows: 1,
   maximumRows: Infinity,
-  rowHeight: null
+  rowHeight: null,
+  assumeRendered: false
 }
 ```
-Passing the `rowHeight` value may be a bit more performant solution, but it will mean you can guarantee that the `lineSize` won't be changed in future with JS or CSS (including some `@media` queries). Otherwise, `rowHeight` will be calculated on the initial step and recalculated on window `'resize'` event.
+Passing the `rowHeight` value may be a bit more performant solution, but it will mean that the `lineSize` is guarantee to be unchanged in future with JS or CSS (including some `@media` queries). Otherwise, `rowHeight` will be calculated on the initial step and recalculated on window `'resize'` event.
+
+Passing the `assumeRendered` with `true` value will skip the check for the presence of the element in the DOM. Otherwise, the `render()` function will wait, until the element is rendered and then will apply the add the event listeners.
 
 __Input__
 ```js
 {
-  maxWidth: null
+  maxWidth: null,
+  assumeRendered: false
 }
 ```
 

@@ -13,11 +13,11 @@ export function getPropertyValue(name, styles) {
 export function throttle(callback) {
   let ticking = false;
 
-  return function requestTick() {
+  return function requestTick(...args) {
     if (!ticking) {
       requestAnimationFrame(() => {
         ticking = false;
-        callback();
+        callback(...args);
       });
     }
     ticking = true;
@@ -35,4 +35,15 @@ export function middleValue(first, second, third) {
     return second;
   }
   return first > third ? third : first;
+}
+
+export function isPresent(element) {
+  const { id, className, type } = element;
+  if (id) {
+    return document.getElementById(id) != null;
+  }
+  const classes = className.replace(/\s/, '.');
+  const query = classes ? `${type}.${classes}` : type;
+  const elements = document.querySelectorAll(query);
+  return [...elements].some(el => el === element);
 }
