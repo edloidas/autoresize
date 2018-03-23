@@ -4,7 +4,8 @@
   var defaultOptions = Object.freeze({
     minimumRows: 1,
     maximumRows: Infinity,
-    rowHeight: null
+    rowHeight: null,
+    assumeRendered: false
   });
 
   function getStyles(element) {
@@ -22,11 +23,11 @@
   function throttle(callback) {
     let ticking = false;
 
-    return function requestTick() {
+    return function requestTick(...args) {
       if (!ticking) {
         requestAnimationFrame(() => {
           ticking = false;
-          callback();
+          callback(...args);
         });
       }
       ticking = true;
@@ -44,6 +45,17 @@
       return second;
     }
     return first > third ? third : first;
+  }
+
+  function isPresent(element) {
+    const { id, className, type } = element;
+    if (id) {
+      return document.getElementById(id) != null;
+    }
+    const classes = className.replace(/\s/, '.');
+    const query = classes ? `${type}.${classes}` : type;
+    const elements = document.querySelectorAll(query);
+    return [...elements].some(el => el === element);
   }
 
   function getBaseScrollHeight(textarea, rows) {
@@ -79,14 +91,13 @@
   }
 
   function autoresize(textarea, options) {
-    const fullOptions = Object.assign({}, defaultOptions, options);
-    const { maximumRows } = fullOptions;
-    let { rowHeight } = fullOptions;
+    const { maximumRows } = options;
+    let { rowHeight } = options;
     let resizeListener;
 
     const dynamic = rowHeight == null;
 
-    const rowCountUpdater = createRowCountUpdater(textarea, fullOptions);
+    const rowCountUpdater = createRowCountUpdater(textarea, options);
     const updateRowCount = () => rowCountUpdater(rowHeight);
 
     if (dynamic) {
@@ -107,16 +118,39 @@
     textarea.addEventListener('scroll', scrollListener);
 
     return () => {
-      textarea.removeEventListener(keydownListener);
-      textarea.removeEventListener(scrollListener);
+      textarea.removeEventListener('keydown', keydownListener);
+      textarea.removeEventListener('scroll', scrollListener);
       if (dynamic) {
-        window.removeEventListener(resizeListener);
+        window.removeEventListener('resize', resizeListener);
       }
     };
   }
 
+  function waitForRendered(textarea, options) {
+    const fullOptions = Object.assign({}, defaultOptions, options);
+    let intervalID;
+    let remove = () => {};
+
+    if (fullOptions.assumeRendered || isPresent(textarea)) {
+      remove = autoresize(textarea, fullOptions);
+    } else {
+      intervalID = setInterval(() => {
+        if (isPresent(textarea)) {
+          clearInterval(intervalID);
+          remove = autoresize(textarea, fullOptions);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(intervalID);
+      remove();
+    };
+  }
+
   var defaultOptions$1 = Object.freeze({
-    maxWidth: null
+    maxWidth: null,
+    assumeRendered: false
   });
 
   /* eslint-disable no-unused-vars */
@@ -130,7 +164,7 @@
 
   function autoresize$2(element, options = {}) {
     if (element instanceof HTMLTextAreaElement) {
-      return autoresize(element, options);
+      return waitForRendered(element, options);
     } else if (element instanceof HTMLInputElement) {
       return autoresize$1(element, options);
     }
