@@ -1,12 +1,21 @@
 {
   "name": "autoresize",
   "version": "0.1.1",
-  "description": "Automatically resize the inputs.",
+  "description": "Automatically resize inputs. High performance. Zero dependencies.",
   "keywords": [
     "autoresize",
+    "auto",
+    "automatic",
     "resize",
+    "autoheight",
+    "autowidth",
+    "height",
+    "width",
     "textarea",
-    "input"
+    "input",
+    "area",
+    "performance",
+    "zero"
   ],
   "main": "index.js",
   "files": [

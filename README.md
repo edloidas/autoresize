@@ -1,7 +1,7 @@
 autoresize
 ==========
 
-> Automatically resize the inputs.
+> Automatically resize inputs. High performance. Zero dependencies.
 
 ## Examples
 
