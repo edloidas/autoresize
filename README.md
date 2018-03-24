@@ -13,7 +13,7 @@ __Note:__ _Autoresize of the `<input>` element is **not yet implemented**._
 #### Node
 
 ```
-npm i roll-parser
+npm i autoresize
 ```
 
 Then in your project require it:
@@ -65,7 +65,7 @@ const disable = autoresize(element, options);
 disable();
 ```
 
-#### Paramenters
+### Paramenters
 
 ##### `element`
 
@@ -87,7 +87,7 @@ __TextArea__
 ```
 Passing the `rowHeight` value may be a bit more performant solution, but it will mean that the `lineSize` is guarantee to be unchanged in future with JS or CSS (including some `@media` queries). Otherwise, `rowHeight` will be calculated on the initial step and recalculated on window `'resize'` event.
 
-Passing the `assumeRendered` with `true` value will skip the check for the presence of the element in the DOM. Otherwise, the `render()` function will wait, until the element is rendered and then will apply the add the event listeners.
+Passing the `assumeRendered` with `true` value will skip the check for the presence of the element in the DOM. Otherwise, the `render()` function will wait, until the element is rendered and then will apply the event listeners.
 
 __Input__
 ```js
